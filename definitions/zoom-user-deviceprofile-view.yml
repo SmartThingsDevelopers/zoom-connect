@@ -1,0 +1,33 @@
+# Defines the device profile and device configuration for the Zoom presence status device.
+# Note that this shorthand format is supported by the SmartThings CLI but not directly by the
+# APIs, which have separate endpoints for device profiles and devivce configurations. In this
+# shorthand format the device configuration definition is provided in the "view" property.
+# Creating or updating a device using this format automatically creates device profile and
+# device configuration object, and sets the presentationId of the device profile to the associated
+# device configuration
+
+name: Zoom User
+components:
+  - label: main
+    id: main
+    capabilities:
+      - id: bobflorian.zoomPresenceStatus
+        version: 1
+    categories: []
+metadata:
+  ocfDeviceType: oic.d.tv
+preferences: []
+view:
+  dashboard:
+    states:
+      - capability: bobflorian.zoomPresenceStatus
+        patch: []
+    actions: []
+  detailView:
+    - capability: bobflorian.zoomPresenceStatus
+      patch: []
+  automation:
+    conditions:
+      - capability: bobflorian.zoomPresenceStatus
+        patch: []
+    actions: []

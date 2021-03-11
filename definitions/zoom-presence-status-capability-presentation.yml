@@ -1,0 +1,98 @@
+# Definition of the SmartThings mobile app UI for the Zoom Presence Status capability.
+
+dashboard:
+  states:
+    - label: '{{presenceStatus.value}}'
+      alternatives:
+        - key: Available
+          value: 'Available'
+          type: inactive
+        - key: In_Meeting
+          value: 'In Meeting'
+          type: active
+        - key: Presenting
+          value: 'Presenting'
+          type: active
+        - key: On_Phone_Call
+          value: 'On Phone Call'
+          type: active
+        - key: In_Calendar_Event
+          value: 'In Calendar Event'
+          type: active
+        - key: Away
+          value: 'Away'
+          type: inactive
+        - key: Do_Not_Disturb
+          value: 'Do Not Disturb'
+          type: inactive
+  actions: []
+  basicPlus: []
+detailView:
+  - label: Presence Status
+    displayType: state
+    state:
+      label: presenceStatus.value
+      alternatives:
+        - key: Available
+          value: 'Available'
+          type: inactive
+        - key: In_Meeting
+          value: 'In Meeting'
+          type: active
+        - key: Presenting
+          value: 'Presenting'
+          type: active
+        - key: On_Phone_Call
+          value: 'On Phone Call'
+          type: active
+        - key: In_Calendar_Event
+          value: 'In Calendar Event'
+          type: active
+        - key: Away
+          value: 'Away'
+          type: inactive
+        - key: Do_Not_Disturb
+          value: 'Do Not Disturb'
+          type: inactive
+automation:
+  conditions:
+    - label: Meeting In Progress
+      displayType: list
+      list:
+        value: inProgress.value
+        alternatives:
+          - key: Yes
+            value: 'Yes'
+            type: active
+          - key: No
+            value: 'No'
+            type: inactive
+    - label: Presence Status
+      displayType: list
+      list:
+        value: presenceStatus.value
+        alternatives:
+          - key: Available
+            value: 'Available'
+            type: inactive
+          - key: In_Meeting
+            value: 'In Meeting'
+            type: active
+          - key: Presenting
+            value: 'Presenting'
+            type: active
+          - key: On_Phone_Call
+            value: 'On Phone Call'
+            type: active
+          - key: In_Calendar_Event
+            value: 'In Calendar Event'
+            type: active
+          - key: Away
+            value: 'Away'
+            type: inactive
+          - key: Do_Not_Disturb
+            value: 'Do Not Disturb'
+            type: inactive
+  actions: []
+id: bobflorian.zoomPresenceStatus
+version: 1

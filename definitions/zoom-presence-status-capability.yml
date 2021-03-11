@@ -1,0 +1,39 @@
+# Definition of the capability used by the device created to indicate zoom presence status
+# The capability has two attributes. The presenceStatus attribute reflects the user's status
+# as defined by Zoom. The inProgress attribute is derived from the presence status and simply
+# indicates whether the user is in a meeting or not. It's there to make creating automations
+# easier, since they don't need to account for all the possible presence values.
+
+name: Zoom Presence Status
+attributes:
+  presenceStatus:
+    schema:
+      title: presenceStatus
+      type: object
+      properties:
+        value:
+          type: string
+          enum:
+            - Available
+            - In_Meeting
+            - Presenting
+            - On_Phone_Call
+            - In_Calendar_Event
+            - Away
+            - Do_Not_Disturb
+      additionalProperties: false
+      required:
+        - value
+  inProgress:
+    schema:
+      title: inProgress
+      type: object
+      properties:
+        value:
+          type: string
+          enum:
+            - Yes
+            - No
+      additionalProperties: false
+      required:
+        - value

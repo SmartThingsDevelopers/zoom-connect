@@ -1,0 +1,93 @@
+org: your-org-name
+service: your-service-name
+useDotenv: false
+
+custom:
+  myStage: ${opt:stage, self:provider.stage}
+  myEnvironment:
+    DEVICE_PROFILE_ID:
+      dev: your-dev-device-profile
+      prod: your-prod-device-profile
+  mySecrets: "${ssm:/aws/reference/secretsmanager/${self:service}-${self:custom.myStage}~true}"
+
+resources:
+  - Resources:
+      MainTable:
+        Type: AWS::DynamoDB::Table
+        Properties:
+          TableName: "${self:provider.environment.DYNAMODB_TABLE_NAME}"
+          AttributeDefinitions:
+            - AttributeName: pk
+              AttributeType: S
+            - AttributeName: sk
+              AttributeType: S
+            - AttributeName: gsi1
+              AttributeType: S
+          KeySchema:
+            - AttributeName: pk
+              KeyType: HASH
+            - AttributeName: sk
+              KeyType: RANGE
+          GlobalSecondaryIndexes:
+            - IndexName: gsi1-index
+              KeySchema:
+                - AttributeName: gsi1
+                  KeyType: HASH
+              Projection:
+                ProjectionType: ALL
+          BillingMode: PAY_PER_REQUEST
+          StreamSpecification:
+            StreamViewType: NEW_AND_OLD_IMAGES
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: dev
+  region: ${opt:region}
+  endpointType: regional
+  environment:
+    DEVICE_PROFILE_ID: "${self:custom.myEnvironment.DEVICE_PROFILE_ID.${self:custom.myStage}}"
+    DYNAMODB_TABLE_NAME: "${self:service}-${self:custom.myStage}"
+    ST_APP_ID: "${self:custom.mySecrets.ST_APP_ID}"
+    ST_CALLBACK: https://api.smartthings.com/oauth/callback
+    ST_CLIENT_ID: "${self:custom.mySecrets.ST_CLIENT_ID}"
+    ST_CLIENT_SECRET: "${self:custom.mySecrets.ST_CLIENT_SECRET}"
+    ZOOM_API_URL: https://api.zoom.us
+    ZOOM_AUTH_URL: https://zoom.us/oauth/authorize
+    ZOOM_TOKEN_URL: https://zoom.us/oauth/token
+    ZOOM_CLIENT_ID: "${self:custom.mySecrets.ZOOM_CLIENT_ID}"
+    ZOOM_CLIENT_SECRET: "${self:custom.mySecrets.ZOOM_CLIENT_SECRET}"
+    ZOOM_VERIFICATION_TOKEN: "${self:custom.mySecrets.ZOOM_VERIFICATION_TOKEN}"
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+        - dynamodb:BatchWriteItem
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE_NAME}"
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+        - dynamodb:BatchWriteItem
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE_NAME}/index/gsi1-index"
+
+functions:
+  smartapp:
+    handler: index.smartapp
+    timeout: 15
+  webapp:
+    handler: index.webapp
+    timeout: 15
+    events:
+      - http:
+          method: post
+          path: /{proxy+}
